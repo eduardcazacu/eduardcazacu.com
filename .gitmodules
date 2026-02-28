@@ -1,0 +1,3 @@
+[submodule "nyan-cat"]
+	path = nyan-cat
+	url = https://github.com/cristurm/nyan-cat.git

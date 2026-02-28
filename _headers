@@ -10,3 +10,6 @@
 
 /photos/*
   Cache-Control: public, max-age=604800
+
+/nyan-cat/*
+  Cache-Control: public, max-age=604800

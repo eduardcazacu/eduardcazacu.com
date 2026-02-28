@@ -27,6 +27,19 @@ p{max-width:60ch}
 #photo.ready{opacity:1}
 #photo-hint{margin:0;font-size:.75rem;opacity:.7}
 #photo-hint.hidden{opacity:0;visibility:hidden}
+#nyan{position:fixed;inset:0;z-index:99;background:#000;display:none}
+#nyan.on{display:block}
+#nyan-frame{width:100%;height:100%;border:0}
+#nyan-close{
+  position:absolute;top:.6rem;left:.8rem;z-index:1;border:0;background:transparent;
+  color:#fff;font:700 1.4rem/1 system-ui,Arial;cursor:pointer;padding:.2rem .45rem;opacity:.85
+}
+#nyan-close:hover{opacity:1}
+#nyan-credit{
+  position:absolute;left:0;right:0;bottom:.4rem;text-align:center;
+  font-size:.65rem;opacity:.75;color:#fff
+}
+#nyan-credit a{color:#fff}
 footer{grid-column:1;grid-row:2;padding:1rem clamp(1rem,4vw,3rem);font-size:.7rem}
 @media (max-width:840px){
   body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;font-size:clamp(12px,2.8vw,14px)}
@@ -51,10 +64,32 @@ footer{grid-column:1;grid-row:2;padding:1rem clamp(1rem,4vw,3rem);font-size:.7re
   <p><a href="mailto:senses.party-6u@icloud.com">Get in touch</a></p>
 </main>
 <aside id=photo-wrap><div id=photo-box><img id=photo alt><p id=photo-hint>Click on the photo</p></div></aside>
+<div id=nyan aria-hidden=true>
+  <button id=nyan-close type=button aria-label="Close Nyan Cat">X</button>
+  <iframe id=nyan-frame title="Nyan Cat animation" loading=lazy sandbox="allow-scripts"></iframe>
+</div>
 <footer>© 2026 Eduard Cazacu</footer>
 <script>
-(()=>{const img=document.getElementById("photo"),hint=document.getElementById("photo-hint"),ext=/\.(avif|gif|jpe?g|png|webp)$/i;
+(()=>{const img=document.getElementById("photo"),hint=document.getElementById("photo-hint"),nyan=document.getElementById("nyan"),nyanClose=document.getElementById("nyan-close"),ext=/\.(avif|gif|jpe?g|png|webp)$/i;
+let nyanFrame=document.getElementById("nyan-frame");
 let files=[],current="";
+const taps=[];
+let nyanOn=false;
+const openNyan=()=>{
+  if(nyanOn)return;
+  nyanOn=true;
+  nyan.classList.add("on");
+  nyanFrame.src="/nyan-cat/";
+};
+const closeNyan=()=>{
+  nyanOn=false;
+  nyan.classList.remove("on");
+  nyanFrame.src="about:blank";
+  const fresh=nyanFrame.cloneNode(false);
+  nyanFrame.replaceWith(fresh);
+  nyanFrame=fresh;
+  taps.length=0;
+};
 const pick=()=>{
   if(!files.length)return;
   let next=files[(Math.random()*files.length)|0];
@@ -82,8 +117,13 @@ else setTimeout(load,1);
 let clicked=false;
 img.addEventListener("click",()=>{
   if(!clicked){clicked=true;hint.classList.add("hidden");}
+  const now=Date.now();
+  taps.push(now);
+  while(taps.length&&now-taps[0]>1000)taps.shift();
+  if(taps.length>=5){openNyan();return;}
   pick();
 });
+nyanClose.addEventListener("click",closeNyan);
 img.style.cursor="pointer";
 })();
 </script>
